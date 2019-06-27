@@ -1917,11 +1917,8 @@ def read_from_string(input_str):
 
 
 def write_to_string(input_otio):
-    tree_e = cElementTree.Element('xmeml', version="4")
-    project_e = _append_new_sub_element(tree_e, 'project')
-    _append_new_sub_element(project_e, 'name', text=input_otio.name)
-    children_e = _append_new_sub_element(project_e, 'children')
 
+    tree_e = cElementTree.Element('xmeml', version="4")
     br_map = collections.defaultdict(dict)
 
     if isinstance(input_otio, schema.Timeline):
@@ -1929,12 +1926,15 @@ def write_to_string(input_otio):
             start_time=input_otio.global_start_time,
             duration=input_otio.duration()
         )
-        children_e.append(
+        tree_e.append(
             _build_sequence_for_timeline(
                 input_otio, timeline_range, br_map
             )
         )
     elif isinstance(input_otio, schema.SerializableCollection):
+        project_e = _append_new_sub_element(tree_e, 'project')
+        _append_new_sub_element(project_e, 'name', text=input_otio.name)
+        children_e = _append_new_sub_element(project_e, 'children')
         children_e.extend(
             _build_collection(input_otio, br_map)
         )
